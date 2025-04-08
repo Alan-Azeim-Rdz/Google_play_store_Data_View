@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Windows.Forms;
 using ScottPlot;
 
@@ -14,14 +15,14 @@ namespace Google_play_store_Data_View
         public User_review()
         {
             InitializeComponent();
+            Loading_Data_Review(DataGrideViewUserData);
         }
 
-        private void BtnCarry_Click(object sender, EventArgs e)
+        private void Loading_Data_Review(DataGridView dataGrid)
         {
-            string archive_ruta = @"Archivos\googleplaystore.CSV";
+            string archive_ruta = @"Archivos\googleplaystore_user_reviews.CSV";
 
             // lee el archivo CSV y dependiendo del renglon 0 genera las columnas del DataGridView
-            DataGridView dataGrid = new DataGridView();
             try
             {
                 using (StreamReader sr = new StreamReader(archive_ruta))
@@ -47,28 +48,16 @@ namespace Google_play_store_Data_View
                 MessageBox.Show($"Ocurrió un error al leer el archivo: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            // Extraer los datos de la columna "App"
-            List<string> appNames = new List<string>();
-            foreach (DataGridViewRow row in dataGrid.Rows)
+
+            //obtiene los datos de la columna 0, estos valores dependiendo de la cantidad los cuenta y los agrega en un arreglo de double
+            double[] data = new double[dataGrid.Rows.Count];
+            for (int i = 11; i < dataGrid.Rows.Count; i++)
             {
-                if (row.Cells["App"].Value != null)
-                {
-                    appNames.Add(row.Cells["App"].Value.ToString());
-                }
+                data[i] = Convert.ToDouble(dataGrid.Rows[i].Cells[0].Value);
             }
+            //llama a la funcion Pie_valor para graficar el arreglo de double
+            Pie_valor(data);
 
-            // Crear un gráfico con ScottPlot
-            var plt = new ScottPlot.Plot();
-            double[] values = appNames.Select(x => (double)x.Length).ToArray();
-            var bar = plt.AddBar(values);
-            plt.XTicks(appNames.ToArray());
-
-            // Mostrar el gráfico en un formulario
-            var form = new Form();
-            var formsPlot = new ScottPlot.FormsPlot() { Dock = DockStyle.Fill };
-            form.Controls.Add(formsPlot);
-            formsPlot.Plot = plt;
-            form.ShowDialog();
         }
 
         private void BtnNext_Click(object sender, EventArgs e)
@@ -79,30 +68,38 @@ namespace Google_play_store_Data_View
             this.Hide();
         }
 
-        private void Pie_with_Percent_Labels(double[] values)
+        
+        private void BtnExit_Click(object sender, EventArgs e)
         {
-            // create a pie chart
-            var pie = FromPlotPiePercent.Plot.AddPie(values);
+            this.Close();
+        }
+
+        private void Pie_valor(double[] data)
+        {
+            // Asume que tienes un control FormsPlot en tu formulario llamado formsPlot1
+            var myPlot =  FromPlotPiePercent.Plot;
+            myPlot.Clear(); // Limpiar cualquier gráfico anterior
+
+            var pie = myPlot.Add.Pie(data);
             pie.ExplodeFraction = .1;
-            pie.SliceLabelDistance = 0.5;
 
-            // determine percentages for each slice
-            double total = pie.Slices.Select(x => x.Value).Sum();
-            double[] percentages = pie.Slices.Select(x => x.Value / total * 100).ToArray();
+            // Ocultar componentes innecesarios del gráfico
+            myPlot.Axes.Frameless();
 
-            // set each slice label to its percentage
-            for (int i = 0; i < pie.Slices.Count; i++)
-            {
-                pie.Slices[i].Label = $"{percentages[i]:0.0}%";
-                pie.Slices[i].LabelFontSize = 20;
-                pie.Slices[i].LabelBold = true;
-            }
+            // Refrescar el control para mostrar el nuevo gráfico
+            FromPlotPiePercent.Refresh();
+
+            ScottPlot.Plot myPlot = new();
+
+            var pie = myPlot.Add.Pie(data);
+            var pie = myPlot.Add.Pie(values);
+            pie.ExplodeFraction = .1;
 
             // hide unnecessary plot components
-            FromPlotPiePercent.Plot.Axes.Frameless();
-            FromPlotPiePercent.Plot.HideGrid();
-            FromPlotPiePercent.Plot.Axes.AutoScale();
-            FromPlotPiePercent.Refresh();
+            myPlot.Axes.Frameless();
+            myPlot.HideGrid();
+
+            myPlot.SavePng("demo.png", 400, 300);
         }
     }
 }

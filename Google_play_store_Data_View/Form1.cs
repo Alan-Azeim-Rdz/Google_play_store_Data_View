@@ -7,21 +7,13 @@ namespace Google_play_store_Data_View
     public partial class Form1 : Form
     {
         string stringConnection = @"Server=ALAN_LUX_ASUS\SQLEXPRESS08;Database=Google_Play_Store;Trusted_Connection=True;TrustServerCertificate=true;";
+        string archive_ruta = @"Archivos\googleplaystore.CSV";
         public Form1()
         {
             InitializeComponent();
-
-        }
-
-        private void BtnCarry_Click(object sender, EventArgs e)
-        {
-            string archive_ruta = @"Archivos\googleplaystore.CSV";
-
-
-
             Archive_Carry(archive_ruta, DataGrideViewData);
-
         }
+
 
         private void Archive_Carry(string url, DataGridView dataGrid)
         {
@@ -58,6 +50,19 @@ namespace Google_play_store_Data_View
             //abrir el formulario de User_review
             User_review user_Review = new User_review();
             user_Review.Show();
+            this.Hide();
+        }
+
+        private void BtnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void BtnTableReviewsApp_Click(object sender, EventArgs e)
+        {
+            //abrir el fomulario llamado from1
+            Form1 form1 = new Form1();
+            form1.Show();
             this.Hide();
         }
     }

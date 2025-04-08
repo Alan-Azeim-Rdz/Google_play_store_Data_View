@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             DataGrideViewUserData = new DataGridView();
-            BtnCarry = new Button();
             BtnNext = new Button();
             FromPlotPiePercent = new ScottPlot.WinForms.FormsPlot();
             formsPlot2 = new ScottPlot.WinForms.FormsPlot();
             formsPlot3 = new ScottPlot.WinForms.FormsPlot();
             formsPlot4 = new ScottPlot.WinForms.FormsPlot();
+            BtnExit = new Button();
             ((System.ComponentModel.ISupportInitialize)DataGrideViewUserData).BeginInit();
             SuspendLayout();
             // 
@@ -46,23 +46,13 @@
             DataGrideViewUserData.Size = new Size(593, 536);
             DataGrideViewUserData.TabIndex = 3;
             // 
-            // BtnCarry
-            // 
-            BtnCarry.Location = new Point(25, 12);
-            BtnCarry.Name = "BtnCarry";
-            BtnCarry.Size = new Size(142, 44);
-            BtnCarry.TabIndex = 4;
-            BtnCarry.Text = "Cargar Informacion";
-            BtnCarry.UseVisualStyleBackColor = true;
-            BtnCarry.Click += BtnCarry_Click;
-            // 
             // BtnNext
             // 
-            BtnNext.Location = new Point(25, 493);
+            BtnNext.Location = new Point(25, 29);
             BtnNext.Name = "BtnNext";
             BtnNext.Size = new Size(142, 44);
             BtnNext.TabIndex = 5;
-            BtnNext.Text = "Before";
+            BtnNext.Text = "Table Apps Google play";
             BtnNext.UseVisualStyleBackColor = true;
             BtnNext.Click += BtnNext_Click;
             // 
@@ -98,17 +88,27 @@
             formsPlot4.Size = new Size(223, 219);
             formsPlot4.TabIndex = 9;
             // 
+            // BtnExit
+            // 
+            BtnExit.Location = new Point(25, 493);
+            BtnExit.Name = "BtnExit";
+            BtnExit.Size = new Size(142, 44);
+            BtnExit.TabIndex = 10;
+            BtnExit.Text = "Exit";
+            BtnExit.UseVisualStyleBackColor = true;
+            BtnExit.Click += BtnExit_Click;
+            // 
             // User_review
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1497, 582);
+            Controls.Add(BtnExit);
             Controls.Add(formsPlot4);
             Controls.Add(formsPlot3);
             Controls.Add(formsPlot2);
             Controls.Add(FromPlotPiePercent);
             Controls.Add(BtnNext);
-            Controls.Add(BtnCarry);
             Controls.Add(DataGrideViewUserData);
             Name = "User_review";
             Text = "User_review";
@@ -119,11 +119,11 @@
         #endregion
 
         private DataGridView DataGrideViewUserData;
-        private Button BtnCarry;
         private Button BtnNext;
         private ScottPlot.WinForms.FormsPlot FromPlotPiePercent;
         private ScottPlot.WinForms.FormsPlot formsPlot2;
         private ScottPlot.WinForms.FormsPlot formsPlot3;
         private ScottPlot.WinForms.FormsPlot formsPlot4;
+        private Button BtnExit;
     }
 }
