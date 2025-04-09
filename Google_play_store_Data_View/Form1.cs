@@ -2,6 +2,7 @@ namespace Google_play_store_Data_View
 {
     using Microsoft.Data.SqlClient;
     using ScottPlot;
+    using ScottPlot.WinForms;
     using System.Data;
 
     public partial class Form1 : Form
@@ -42,7 +43,97 @@ namespace Google_play_store_Data_View
             {
                 MessageBox.Show($"Ocurrió un error al leer el archivo: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            ProcessData(DataGrideViewData, "Content Rating", FromPlotPiePercent);
+            ProcessData(DataGrideViewData, "Category", formsPlot3);
 
+        }
+        private void ProcessData(DataGridView dataGrid, string columnName, FormsPlot plot)
+        {
+            Dictionary<string, double> countData = new Dictionary<string, double>();
+
+            foreach (DataGridViewRow row in dataGrid.Rows)
+            {
+                if (row.IsNewRow) continue; // Saltar fila vacía
+
+                object cellValue = row.Cells[columnName].Value;
+                if (cellValue != null)
+                {
+                    string value = cellValue.ToString().Trim().ToLower();
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        if (countData.ContainsKey(value))
+                            countData[value]++;
+                        else
+                            countData[value] = 1;
+                    }
+                }
+            }
+
+            // Convertir a arreglos
+            double[] values = countData.Values.ToArray();
+            string[] labels = countData.Keys.ToArray();
+
+            // Llamar a la función para graficar
+
+            if (columnName == "Content Rating")
+            {
+                Create_Pie_Table(values, labels, plot, columnName);
+            }
+            else if (columnName == "Category")
+            {
+                Create_table_barr(values, labels, plot, columnName);
+            }
+
+
+        }
+
+        private void Create_Pie_Table(double[] values, string[] labels, FormsPlot plot, string title)
+        {
+            plot.Plot.Clear(); // Limpiar gráfico previo
+            var pie = plot.Plot.Add.Pie(values);
+            pie.ExplodeFraction = .1;
+            pie.SliceLabelDistance = 0.5;
+
+            // Calcular porcentajes
+            double total = values.Sum();
+            double[] percentages = values.Select(x => x / total * 100).ToArray();
+
+            // Etiquetas de los segmentos
+            for (int i = 0; i < values.Length; i++)
+            {
+                pie.Slices[i].Label = $"{labels[i]} ({percentages[i]:0.0}%)";
+                pie.Slices[i].LabelFontSize = 14;
+                pie.Slices[i].LabelBold = true;
+                pie.Slices[i].LabelFontColor = Colors.Black.WithAlpha(.7);
+            }
+
+            // Ajustar apariencia del gráfico
+            plot.Plot.Title($"Distribución de {title}");
+            plot.Plot.Axes.Frameless();
+            plot.Plot.HideGrid();
+            plot.Plot.Axes.AutoScale();
+            plot.Refresh();
+        }
+
+        private void Create_table_barr(double[] values, string[] labels, FormsPlot plot, string title)
+        {
+            plot.Plot.Clear();
+            var barPlot = plot.Plot.Add.Bars(values);
+
+            // define the content of labels
+            foreach (var bar in barPlot.Bars)
+            {
+                bar.Label = bar.Value.ToString();
+            }
+
+            // customize label style
+            barPlot.ValueLabelStyle.Bold = true;
+            barPlot.ValueLabelStyle.FontSize = 18;
+
+            plot.Plot.Axes.Margins(bottom: 0, top: .2);
+
+            plot.Plot.SavePng("demo.png", 400, 300);
         }
 
         private void BtnNext_Click(object sender, EventArgs e)
@@ -61,8 +152,8 @@ namespace Google_play_store_Data_View
         private void BtnTableReviewsApp_Click(object sender, EventArgs e)
         {
             //abrir el fomulario llamado from1
-            Form1 form1 = new Form1();
-            form1.Show();
+            User_review user_Review = new User_review();
+            user_Review.Show();
             this.Hide();
         }
     }

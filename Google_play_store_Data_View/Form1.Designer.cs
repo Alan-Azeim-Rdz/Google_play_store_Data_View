@@ -29,9 +29,7 @@
         private void InitializeComponent()
         {
             DataGrideViewData = new DataGridView();
-            formsPlot4 = new ScottPlot.WinForms.FormsPlot();
             formsPlot3 = new ScottPlot.WinForms.FormsPlot();
-            formsPlot2 = new ScottPlot.WinForms.FormsPlot();
             FromPlotPiePercent = new ScottPlot.WinForms.FormsPlot();
             BtnExit = new Button();
             BtnTableReviewsApp = new Button();
@@ -46,14 +44,6 @@
             DataGrideViewData.Size = new Size(563, 536);
             DataGrideViewData.TabIndex = 0;
             // 
-            // formsPlot4
-            // 
-            formsPlot4.DisplayScale = 1F;
-            formsPlot4.Location = new Point(1147, 318);
-            formsPlot4.Name = "formsPlot4";
-            formsPlot4.Size = new Size(223, 219);
-            formsPlot4.TabIndex = 13;
-            // 
             // formsPlot3
             // 
             formsPlot3.DisplayScale = 1F;
@@ -61,14 +51,6 @@
             formsPlot3.Name = "formsPlot3";
             formsPlot3.Size = new Size(223, 219);
             formsPlot3.TabIndex = 12;
-            // 
-            // formsPlot2
-            // 
-            formsPlot2.DisplayScale = 1F;
-            formsPlot2.Location = new Point(1147, 39);
-            formsPlot2.Name = "formsPlot2";
-            formsPlot2.Size = new Size(223, 219);
-            formsPlot2.TabIndex = 11;
             // 
             // FromPlotPiePercent
             // 
@@ -102,12 +84,10 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1401, 596);
+            ClientSize = new Size(1118, 596);
             Controls.Add(BtnExit);
             Controls.Add(BtnTableReviewsApp);
-            Controls.Add(formsPlot4);
             Controls.Add(formsPlot3);
-            Controls.Add(formsPlot2);
             Controls.Add(FromPlotPiePercent);
             Controls.Add(DataGrideViewData);
             Name = "Form1";
@@ -119,9 +99,7 @@
         #endregion
 
         private DataGridView DataGrideViewData;
-        private ScottPlot.WinForms.FormsPlot formsPlot4;
         private ScottPlot.WinForms.FormsPlot formsPlot3;
-        private ScottPlot.WinForms.FormsPlot formsPlot2;
         private ScottPlot.WinForms.FormsPlot FromPlotPiePercent;
         private Button BtnExit;
         private Button BtnTableReviewsApp;

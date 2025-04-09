@@ -31,9 +31,7 @@
             DataGrideViewUserData = new DataGridView();
             BtnNext = new Button();
             FromPlotPiePercent = new ScottPlot.WinForms.FormsPlot();
-            formsPlot2 = new ScottPlot.WinForms.FormsPlot();
-            formsPlot3 = new ScottPlot.WinForms.FormsPlot();
-            formsPlot4 = new ScottPlot.WinForms.FormsPlot();
+            FromPlotBar = new ScottPlot.WinForms.FormsPlot();
             BtnExit = new Button();
             ((System.ComponentModel.ISupportInitialize)DataGrideViewUserData).BeginInit();
             SuspendLayout();
@@ -64,29 +62,13 @@
             FromPlotPiePercent.Size = new Size(223, 219);
             FromPlotPiePercent.TabIndex = 6;
             // 
-            // formsPlot2
+            // FromPlotBar
             // 
-            formsPlot2.DisplayScale = 1F;
-            formsPlot2.Location = new Point(1214, 39);
-            formsPlot2.Name = "formsPlot2";
-            formsPlot2.Size = new Size(223, 219);
-            formsPlot2.TabIndex = 7;
-            // 
-            // formsPlot3
-            // 
-            formsPlot3.DisplayScale = 1F;
-            formsPlot3.Location = new Point(905, 318);
-            formsPlot3.Name = "formsPlot3";
-            formsPlot3.Size = new Size(223, 219);
-            formsPlot3.TabIndex = 8;
-            // 
-            // formsPlot4
-            // 
-            formsPlot4.DisplayScale = 1F;
-            formsPlot4.Location = new Point(1214, 318);
-            formsPlot4.Name = "formsPlot4";
-            formsPlot4.Size = new Size(223, 219);
-            formsPlot4.TabIndex = 9;
+            FromPlotBar.DisplayScale = 1F;
+            FromPlotBar.Location = new Point(905, 318);
+            FromPlotBar.Name = "FromPlotBar";
+            FromPlotBar.Size = new Size(223, 219);
+            FromPlotBar.TabIndex = 8;
             // 
             // BtnExit
             // 
@@ -102,11 +84,9 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1497, 582);
+            ClientSize = new Size(1197, 582);
             Controls.Add(BtnExit);
-            Controls.Add(formsPlot4);
-            Controls.Add(formsPlot3);
-            Controls.Add(formsPlot2);
+            Controls.Add(FromPlotBar);
             Controls.Add(FromPlotPiePercent);
             Controls.Add(BtnNext);
             Controls.Add(DataGrideViewUserData);
@@ -121,9 +101,7 @@
         private DataGridView DataGrideViewUserData;
         private Button BtnNext;
         private ScottPlot.WinForms.FormsPlot FromPlotPiePercent;
-        private ScottPlot.WinForms.FormsPlot formsPlot2;
-        private ScottPlot.WinForms.FormsPlot formsPlot3;
-        private ScottPlot.WinForms.FormsPlot formsPlot4;
+        private ScottPlot.WinForms.FormsPlot FromPlotBar;
         private Button BtnExit;
     }
 }

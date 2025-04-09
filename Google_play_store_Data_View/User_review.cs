@@ -5,13 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Windows.Forms;
+using Microsoft.VisualBasic.FileIO;
 using ScottPlot;
+using ScottPlot.WinForms;
 
 namespace Google_play_store_Data_View
 {
     public partial class User_review : Form
     {
-        string stringConnection = @"Server=ALAN_LUX_ASUS\SQLEXPRESS08;Database=Google_Play_Store;Trusted_Connection=True;TrustServerCertificate=true;";
+        string stringConnection = @"Server=LUX_ALAN\SQLEXPRESS;Database=Google_Play_Store;Trusted_Connection=True;TrustServerCertificate=true;";
         public User_review()
         {
             InitializeComponent();
@@ -25,17 +27,26 @@ namespace Google_play_store_Data_View
             // lee el archivo CSV y dependiendo del renglon 0 genera las columnas del DataGridView
             try
             {
-                using (StreamReader sr = new StreamReader(archive_ruta))
+                using (TextFieldParser parser = new TextFieldParser(archive_ruta))
                 {
-                    string[] headers = sr.ReadLine().Split(',');
-                    foreach (string header in headers)
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(",");
+
+                    // Leer encabezados
+                    if (!parser.EndOfData)
                     {
-                        dataGrid.Columns.Add(header, header);
+                        string[] headers = parser.ReadFields();
+                        foreach (string header in headers)
+                        {
+                            dataGrid.Columns.Add(header, header);
+                        }
                     }
-                    while (!sr.EndOfStream)
+
+                    // Leer filas
+                    while (!parser.EndOfData)
                     {
-                        string[] rows = sr.ReadLine().Split(',');
-                        dataGrid.Rows.Add(rows);
+                        string[] fields = parser.ReadFields();
+                        dataGrid.Rows.Add(fields);
                     }
                 }
             }
@@ -50,16 +61,114 @@ namespace Google_play_store_Data_View
 
 
             //obtiene los datos de la columna 0, estos valores dependiendo de la cantidad los cuenta y los agrega en un arreglo de double
+            //las comas dentro de comillas no se cuentan 
             double[] data = new double[dataGrid.Rows.Count];
             for (int i = 11; i < dataGrid.Rows.Count; i++)
             {
-                data[i] = Convert.ToDouble(dataGrid.Rows[i].Cells[0].Value);
+                if (double.TryParse(dataGrid.Rows[i].Cells[0].Value?.ToString(), out double result))
+                {
+                    data[i] = result;
+                }
+                else
+                {
+                    data[i] = 0; // Or handle invalid data appropriately
+                }
             }
             //llama a la funcion Pie_valor para graficar el arreglo de double
-            Pie_valor(data);
+            ProcessData(DataGrideViewUserData, "Sentiment", FromPlotPiePercent);
+            ProcessData(DataGrideViewUserData, "Sentiment_Polarity", FromPlotBar);
+
 
         }
 
+        private void ProcessData(DataGridView dataGrid, string columnName, FormsPlot plot)
+        {
+            Dictionary<string, double> countData = new Dictionary<string, double>();
+
+            foreach (DataGridViewRow row in dataGrid.Rows)
+            {
+                if (row.IsNewRow) continue; // Saltar fila vacía
+
+                object cellValue = row.Cells[columnName].Value;
+                if (cellValue != null)
+                {
+                    string value = cellValue.ToString().Trim().ToLower();
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        if (countData.ContainsKey(value))
+                            countData[value]++;
+                        else
+                            countData[value] = 1;
+                    }
+                }
+            }
+
+            // Convertir a arreglos
+            double[] values = countData.Values.ToArray();
+            string[] labels = countData.Keys.ToArray();
+
+            // Llamar a la función para graficar
+
+            if(columnName == "Sentiment")
+            {
+                Create_Pie_Table(values, labels, plot, columnName);
+            }
+            else if(columnName == "Sentiment_Polarity")
+            {
+                Create_table_barr(values, labels, plot, columnName);
+            }
+               
+
+        }
+
+        private void Create_Pie_Table(double[] values, string[] labels, FormsPlot plot, string title)
+        {
+            plot.Plot.Clear(); // Limpiar gráfico previo
+            var pie = plot.Plot.Add.Pie(values);
+            pie.ExplodeFraction = .1;
+            pie.SliceLabelDistance = 0.5;
+
+            // Calcular porcentajes
+            double total = values.Sum();
+            double[] percentages = values.Select(x => x / total * 100).ToArray();
+
+            // Etiquetas de los segmentos
+            for (int i = 0; i < values.Length; i++)
+            {
+                pie.Slices[i].Label = $"{labels[i]} ({percentages[i]:0.0}%)";
+                pie.Slices[i].LabelFontSize = 14;
+                pie.Slices[i].LabelBold = true;
+                pie.Slices[i].LabelFontColor = Colors.Black.WithAlpha(.7);
+            }
+
+            // Ajustar apariencia del gráfico
+            plot.Plot.Title($"Distribución de {title}");
+            plot.Plot.Axes.Frameless();
+            plot.Plot.HideGrid();
+            plot.Plot.Axes.AutoScale();
+            plot.Refresh();
+        }
+
+        private void Create_table_barr (double[] values, string[] labels, FormsPlot plot, string title)
+        {
+            plot.Plot.Clear();
+            var barPlot = plot.Plot.Add.Bars(values);
+
+            // define the content of labels
+            foreach (var bar in barPlot.Bars)
+            {
+                bar.Label = bar.Value.ToString();
+            }
+
+            // customize label style
+            barPlot.ValueLabelStyle.Bold = true;
+            barPlot.ValueLabelStyle.FontSize = 18;
+
+            plot.Plot.Axes.Margins(bottom: 0, top: .2);
+
+            plot.Plot.SavePng("demo.png", 400, 300);
+        }
         private void BtnNext_Click(object sender, EventArgs e)
         {
             //abrir el formulario de User_review
@@ -68,38 +177,10 @@ namespace Google_play_store_Data_View
             this.Hide();
         }
 
-        
+
         private void BtnExit_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void Pie_valor(double[] data)
-        {
-            // Asume que tienes un control FormsPlot en tu formulario llamado formsPlot1
-            var myPlot =  FromPlotPiePercent.Plot;
-            myPlot.Clear(); // Limpiar cualquier gráfico anterior
-
-            var pie = myPlot.Add.Pie(data);
-            pie.ExplodeFraction = .1;
-
-            // Ocultar componentes innecesarios del gráfico
-            myPlot.Axes.Frameless();
-
-            // Refrescar el control para mostrar el nuevo gráfico
-            FromPlotPiePercent.Refresh();
-
-            ScottPlot.Plot myPlot = new();
-
-            var pie = myPlot.Add.Pie(data);
-            var pie = myPlot.Add.Pie(values);
-            pie.ExplodeFraction = .1;
-
-            // hide unnecessary plot components
-            myPlot.Axes.Frameless();
-            myPlot.HideGrid();
-
-            myPlot.SavePng("demo.png", 400, 300);
         }
     }
 }
