@@ -33,6 +33,7 @@
             FromPlotPiePercent = new ScottPlot.WinForms.FormsPlot();
             FromPlotBar = new ScottPlot.WinForms.FormsPlot();
             BtnExit = new Button();
+            BtnSendData = new Button();
             ((System.ComponentModel.ISupportInitialize)DataGrideViewUserData).BeginInit();
             SuspendLayout();
             // 
@@ -80,11 +81,22 @@
             BtnExit.UseVisualStyleBackColor = true;
             BtnExit.Click += BtnExit_Click;
             // 
+            // BtnSendData
+            // 
+            BtnSendData.Location = new Point(25, 140);
+            BtnSendData.Name = "BtnSendData";
+            BtnSendData.Size = new Size(142, 44);
+            BtnSendData.TabIndex = 11;
+            BtnSendData.Text = "Send SQL";
+            BtnSendData.UseVisualStyleBackColor = true;
+            BtnSendData.Click += BtnSendData_Click;
+            // 
             // User_review
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1197, 582);
+            Controls.Add(BtnSendData);
             Controls.Add(BtnExit);
             Controls.Add(FromPlotBar);
             Controls.Add(FromPlotPiePercent);
@@ -103,5 +115,6 @@
         private ScottPlot.WinForms.FormsPlot FromPlotPiePercent;
         private ScottPlot.WinForms.FormsPlot FromPlotBar;
         private Button BtnExit;
+        private Button BtnSendData;
     }
 }

@@ -1,9 +1,12 @@
 namespace Google_play_store_Data_View
 {
     using Microsoft.Data.SqlClient;
+    using Microsoft.VisualBasic.FileIO;
     using ScottPlot;
+    using ScottPlot.Colormaps;
     using ScottPlot.WinForms;
     using System.Data;
+    using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
     public partial class Form1 : Form
     {
@@ -21,17 +24,26 @@ namespace Google_play_store_Data_View
             // lee el archivo CSV y dependiendo del renglon 0 genera las columnas del DataGridView
             try
             {
-                using (StreamReader sr = new StreamReader(url))
+                using (TextFieldParser parser = new TextFieldParser(archive_ruta))
                 {
-                    string[] headers = sr.ReadLine().Split(',');
-                    foreach (string header in headers)
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(",");
+
+                    // Leer encabezados
+                    if (!parser.EndOfData)
                     {
-                        dataGrid.Columns.Add(header, header);
+                        string[] headers = parser.ReadFields();
+                        foreach (string header in headers)
+                        {
+                            dataGrid.Columns.Add(header, header);
+                        }
                     }
-                    while (!sr.EndOfStream)
+
+                    // Leer filas
+                    while (!parser.EndOfData)
                     {
-                        string[] rows = sr.ReadLine().Split(',');
-                        dataGrid.Rows.Add(rows);
+                        string[] fields = parser.ReadFields();
+                        dataGrid.Rows.Add(fields);
                     }
                 }
             }
@@ -155,6 +167,58 @@ namespace Google_play_store_Data_View
             User_review user_Review = new User_review();
             user_Review.Show();
             this.Hide();
+        }
+
+        private async void BtnSendData_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(stringConnection))
+            {
+                await connection.OpenAsync();
+                foreach (DataGridViewRow row in DataGrideViewData.Rows)
+                {
+                    if (row.IsNewRow) continue;
+
+                    string query = @"INSERT INTO apps 
+            (App, Category, Rating, Reviews, Size, Installs, Type, Price, Content_Rating, Genres, Last_Updated, Current_Ver, Android_Ver) 
+            VALUES 
+            (@App, @Category, @Rating, @Reviews, @Size, @Installs, @Type, @Price, @Content_Rating, @Genres, @Last_Updated, @Current_Ver, @Android_Ver)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@ID", 1);
+                        command.Parameters.AddWithValue("@App", row.Cells["App"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Category", row.Cells["Category"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Rating", Convert.ToDouble(row.Cells["Rating"].Value));
+                        command.Parameters.AddWithValue("@Reviews", row.Cells["Reviews"].Value?.ToString() ??"");
+                        command.Parameters.AddWithValue("@Size", row.Cells["Size"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Installs", row.Cells["Installs"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Type", row.Cells["Type"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Price", row.Cells["Price"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Content_Rating", row.Cells["Content Rating"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Genres", row.Cells["Genres"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Last_Updated", row.Cells["Last Updated"].Value ?? DBNull.Value);
+                        command.Parameters.AddWithValue("@Current_Ver", row.Cells["Current Ver"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Android_Ver", row.Cells["Android Ver"].Value?.ToString() ?? "");
+
+                        double rating;
+                        if (double.TryParse(row.Cells["Rating"].Value?.ToString(), out rating))
+                        {
+                            command.Parameters.AddWithValue("@Rating", rating);
+                        }
+                        else
+                        {
+                            command.Parameters.AddWithValue("@Rating", DBNull.Value);
+                        }
+                    }
+                }
+                
+            }
+
+            MessageBox.Show("Datos enviados a la base de datos correctamente.");
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

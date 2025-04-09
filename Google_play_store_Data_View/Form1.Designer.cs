@@ -33,6 +33,7 @@
             FromPlotPiePercent = new ScottPlot.WinForms.FormsPlot();
             BtnExit = new Button();
             BtnTableReviewsApp = new Button();
+            BtnSendData = new Button();
             ((System.ComponentModel.ISupportInitialize)DataGrideViewData).BeginInit();
             SuspendLayout();
             // 
@@ -80,11 +81,22 @@
             BtnTableReviewsApp.UseVisualStyleBackColor = true;
             BtnTableReviewsApp.Click += BtnTableReviewsApp_Click;
             // 
+            // BtnSendData
+            // 
+            BtnSendData.Location = new Point(37, 106);
+            BtnSendData.Name = "BtnSendData";
+            BtnSendData.Size = new Size(142, 44);
+            BtnSendData.TabIndex = 16;
+            BtnSendData.Text = "Send SQL";
+            BtnSendData.UseVisualStyleBackColor = true;
+            BtnSendData.Click += BtnSendData_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1118, 596);
+            Controls.Add(BtnSendData);
             Controls.Add(BtnExit);
             Controls.Add(BtnTableReviewsApp);
             Controls.Add(formsPlot3);
@@ -92,6 +104,7 @@
             Controls.Add(DataGrideViewData);
             Name = "Form1";
             Text = "Form1";
+            Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)DataGrideViewData).EndInit();
             ResumeLayout(false);
         }
@@ -103,5 +116,6 @@
         private ScottPlot.WinForms.FormsPlot FromPlotPiePercent;
         private Button BtnExit;
         private Button BtnTableReviewsApp;
+        private Button BtnSendData;
     }
 }

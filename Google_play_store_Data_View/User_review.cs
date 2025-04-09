@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic.FileIO;
 using ScottPlot;
 using ScottPlot.WinForms;
@@ -110,15 +111,15 @@ namespace Google_play_store_Data_View
 
             // Llamar a la función para graficar
 
-            if(columnName == "Sentiment")
+            if (columnName == "Sentiment")
             {
                 Create_Pie_Table(values, labels, plot, columnName);
             }
-            else if(columnName == "Sentiment_Polarity")
+            else if (columnName == "Sentiment_Polarity")
             {
                 Create_table_barr(values, labels, plot, columnName);
             }
-               
+
 
         }
 
@@ -150,7 +151,7 @@ namespace Google_play_store_Data_View
             plot.Refresh();
         }
 
-        private void Create_table_barr (double[] values, string[] labels, FormsPlot plot, string title)
+        private void Create_table_barr(double[] values, string[] labels, FormsPlot plot, string title)
         {
             plot.Plot.Clear();
             var barPlot = plot.Plot.Add.Bars(values);
@@ -181,6 +182,45 @@ namespace Google_play_store_Data_View
         private void BtnExit_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void BtnSendData_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(stringConnection))
+            {
+                connection.Open();
+                foreach (DataGridViewRow row in DataGrideViewUserData.Rows)
+                {
+                    // Evitar filas nuevas vacías
+                    if (row.IsNewRow) continue;
+
+                    string query = @"INSERT INTO apps 
+                (App, Category, Rating, Reviews, Size, Installs, Type, Price, Content_Rating, Genres, Last_Updated, Current_Ver, Android_Ver) 
+                VALUES 
+                (@App, @Category, @Rating, @Reviews, @Size, @Installs, @Type, @Price, @Content_Rating, @Genres, @Last_Updated, @Current_Ver, @Android_Ver)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@App", row.Cells["App"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Category", row.Cells["Category"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Rating", Convert.ToDouble(row.Cells["Rating"].Value ?? 0));
+                        command.Parameters.AddWithValue("@Reviews", Convert.ToInt32(row.Cells["Reviews"].Value ?? 0));
+                        command.Parameters.AddWithValue("@Size", row.Cells["Size"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Installs", row.Cells["Installs"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Type", row.Cells["Type"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Price", row.Cells["Price"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Content_Rating", row.Cells["Content Rating"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Genres", row.Cells["Genres"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Last_Updated", Convert.ToDateTime(row.Cells["Last Updated"].Value ?? DateTime.Now));
+                        command.Parameters.AddWithValue("@Current_Ver", row.Cells["Current Ver"].Value?.ToString() ?? "");
+                        command.Parameters.AddWithValue("@Android_Ver", row.Cells["Android Ver"].Value?.ToString() ?? "");
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            MessageBox.Show("Datos enviados a la base de datos correctamente.");
         }
     }
 }
